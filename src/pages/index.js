@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { Link, useStaticQuery, graphql } from 'gatsby'
 import { StaticImage } from 'gatsby-plugin-image'
-import Layout from '../components/layout'
+import Layout from '../components/layout.js'
 
 import { imageWrapper } from '../styles/index.module.css'
 
-const IndexPage = () => {
+export default function IndexPage() {
   const data = useStaticQuery(graphql`
     query GetBlogPosts {
       allMdx(sort: { fields: frontmatter___date, order: DESC }) {
@@ -19,17 +19,33 @@ const IndexPage = () => {
           }
         }
       }
+      allSanityEpisode(
+        sort: { fields: date, order: DESC }
+        filter: { youtubeID: { ne: null } }
+        limit: 20
+      ) {
+        nodes {
+          id
+          title
+          guest {
+            name
+          }
+          gatsbyPath(filePath: "/episode/{SanityEpisode.slug__current}")
+        }
+      }
     }
   `)
 
   const posts = data.allMdx.nodes
+  const episodes = data.allSanityEpisode.nodes
+  console.log('episodes:', episodes)
 
   return (
     <Layout>
       <div className={imageWrapper}>
         <StaticImage
           src="../images/ivana-la-61jg6zviI7I-unsplash.jpg"
-          alt="A corgi sitting on a bed with red paper hearts all over it. It looks unamused."
+          alt="a corgi sitting on a bed with red paper hearts all over it. it looks unamused"
           placeholder="dominantColor"
           width={300}
           height={300}
@@ -48,8 +64,22 @@ const IndexPage = () => {
           </li>
         ))}
       </ul>
+
+      <h2>
+        Latest episodes of <em>Learn With Jason</em>
+      </h2>
+      <ul>
+        {episodes.map((episode) => (
+          <li key={episode.id}>
+            <Link to={episode.gatsbyPath}>
+              {episode.title} (with {episode.guest?.[0]?.name})
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <a href="https://www.learnwithjason.dev/">
+        Watch all episodes of <em>Learn With Jason</em>
+      </a>
     </Layout>
   )
 }
-
-export default IndexPage
