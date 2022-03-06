@@ -28,10 +28,12 @@ export default function SanityEpisode({ data }) {
   return (
     <Layout title={episode.title} description={episode.description}>
       {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      <GatsbyImage
-        image={episode.image.asset.gatsbyImageData}
-        alt={episode.title}
-      />
+      {episode.image?.asset?.gatsbyImageData && (
+        <GatsbyImage
+          image={episode.image?.asset?.gatsbyImageData}
+          alt={episode.title}
+        />
+      )}
       <h1>{episode.title}</h1>
       <p>
         (posted {episode.date}) – {episode.description}
